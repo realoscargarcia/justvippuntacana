@@ -772,3 +772,31 @@ p:last-child { margin-bottom: 0; }
 .thumb--photo { padding: 0; overflow: hidden; }
 .thumb--photo img { width: 100%; height: 100%; object-fit: cover; }
 .card-media .veh-photo { width: 100%; height: 100%; object-fit: cover; }
+
+/* transfer rate table */
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+.rate-table th,
+.rate-table td { padding: 1.1rem 1.4rem; text-align: left; border-top: 1px solid var(--line); }
+.rate-table thead th {
+  border-top: 0;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bone-dim);
+}
+.rate-table tbody th { font-weight: 500; font-size: 0.98rem; }
+.rate-table td { width: 27%; }
+.rate { font-family: var(--serif); font-size: 1.5rem; }
+.rate--ask { font-family: var(--sans); font-size: 0.86rem; font-style: italic; color: var(--muted); }
+@media (max-width: 560px) {
+  .rate-table th, .rate-table td { padding: 0.9rem 0.8rem; }
+  .rate-table tbody th { font-size: 0.88rem; }
+  .rate { font-size: 1.2rem; }
+}

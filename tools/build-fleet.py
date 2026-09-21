@@ -14,22 +14,23 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 VEHICLES = [
     {
-        "slug": "executive-sedan",
+        "slug": "lincoln-navigator-2018",
         "key": "c1",
-        "symbol": "i-sedan",
-        "cls": "veh.cls.sedan",
-        "en": "Executive Sedan",
-        "es": "Sedán Ejecutivo",
-        "prices": ("75", "180", "260", "380"),
+        "symbol": "i-suv",
+        "cls": "veh.cls.suv",
+        "en": "Lincoln Navigator 2018",
+        "es": "Lincoln Navigator 2018",
+        # (zone key, one way, round trip) — "" means quoted on request
+        "rates": [("veh.zonePC", "60", "110"), ("veh.zoneUA", "99", "199")],
     },
     {
-        "slug": "premium-suv",
+        "slug": "cadillac-escalade-2023",
         "key": "c2",
         "symbol": "i-suv",
         "cls": "veh.cls.suv",
         "en": "Cadillac Escalade 2023",
         "es": "Cadillac Escalade 2023",
-        "prices": ("110", "240", "340", "490"),
+        "rates": [("veh.zonePC", "80", "155"), ("veh.zoneUA", "", "")],
         "images": [
             ("escalade-1-exterior", "veh.g1", "Cadillac Escalade 2023 exterior"),
             ("escalade-2-interior", "veh.g2", "Cadillac Escalade 2023 front cabin"),
@@ -39,13 +40,31 @@ VEHICLES = [
         ],
     },
     {
-        "slug": "vip-van",
+        "slug": "chevrolet-suburban-high-country-2023",
         "key": "c3",
+        "symbol": "i-suv",
+        "cls": "veh.cls.suv",
+        "en": "Chevrolet Suburban High Country 2023",
+        "es": "Chevrolet Suburban High Country 2023",
+        "rates": [("veh.zonePC", "70", "135"), ("veh.zoneUA", "", "")],
+    },
+    {
+        "slug": "chevrolet-suburban-2018",
+        "key": "c4",
+        "symbol": "i-suv",
+        "cls": "veh.cls.suv",
+        "en": "Chevrolet Suburban 2018",
+        "es": "Chevrolet Suburban 2018",
+        "rates": [("veh.zonePC", "65", "125"), ("veh.zoneUA", "", "")],
+    },
+    {
+        "slug": "mercedes-benz-sprinter-2026",
+        "key": "c5",
         "symbol": "i-van",
         "cls": "veh.cls.van",
-        "en": "VIP Van",
-        "es": "Van VIP",
-        "prices": ("140", "290", "410", "590"),
+        "en": "Mercedes-Benz Sprinter 2026",
+        "es": "Mercedes-Benz Sprinter 2026",
+        "rates": [("veh.zonePC", "85", "165"), ("veh.zoneUA", "", "")],
     },
 ]
 
@@ -99,6 +118,26 @@ def gallery(v: dict) -> tuple:
     return "\n".join(slides), "\n".join(thumbs), len(images)
 
 
+def from_price(v: dict) -> str:
+    """Headline price: the one-way rate of the vehicle's first zone."""
+    return v["rates"][0][1]
+
+
+def rates_table(v: dict) -> str:
+    rows = []
+    for zone, one_way, round_trip in v["rates"]:
+        def cell(value):
+            if value:
+                return f'<span class="rate">${value}</span>'
+            return '<span class="rate rate--ask" data-i18n="veh.onRequest">On request</span>'
+        rows.append(f"""          <tr>
+            <th scope="row" data-i18n="{zone}"></th>
+            <td>{cell(one_way)}</td>
+            <td>{cell(round_trip)}</td>
+          </tr>""")
+    return "\n".join(rows)
+
+
 def card_media(v: dict, prefix: str = "") -> str:
     """Card thumbnail: a photo when the vehicle has one, else the SVG silhouette."""
     images = v.get("images")
@@ -106,6 +145,42 @@ def card_media(v: dict, prefix: str = "") -> str:
         return (f'<img class="veh-photo" src="{prefix}assets/img/fleet/{images[0][0]}-thumb.jpg" '
                 f'alt="{images[0][2]}" loading="lazy" decoding="async">')
     return f'<svg class="veh" viewBox="0 0 120 54" aria-hidden="true"><use href="#{v["symbol"]}"></use></svg>'
+
+
+def home_card(v: dict) -> str:
+    """One fleet card for the home page grid."""
+    return f"""        <article class="card reveal">
+          <a href="fleet/{v['slug']}.html">
+            <div class="card-media">
+              <span class="badge" data-i18n="fleet.{v['key']}.badge"></span>
+              {card_media(v)}
+            </div>
+            <div class="card-body">
+              <h3 data-i18n="fleet.{v['key']}.name">{v['en']}</h3>
+              <div class="specs">
+                <span><svg aria-hidden="true"><use href="#i-users"></use></svg><span data-i18n="fleet.{v['key']}.pax"></span></span>
+                <span><svg aria-hidden="true"><use href="#i-case"></use></svg><span data-i18n="fleet.{v['key']}.bags"></span></span>
+              </div>
+              <p data-i18n="fleet.{v['key']}.text"></p>
+              <div class="card-foot">
+                <span class="price">${from_price(v)} <small data-i18n="fleet.from"></small></span>
+                <span class="link-arrow"><span data-i18n="cta.view"></span><svg aria-hidden="true" width="12" height="12"><use href="#i-arrow"></use></svg></span>
+              </div>
+            </div>
+          </a>
+        </article>"""
+
+
+def write_home_grid() -> None:
+    """Rewrite the fleet grid inside index.html between its markers."""
+    path = ROOT / "index.html"
+    html = path.read_text(encoding="utf-8")
+    start = html.index("<!-- FLEET:START -->")
+    end = html.index("<!-- FLEET:END -->")
+    cards = "\n".join(home_card(v) for v in VEHICLES)
+    path.write_text(html[:start] + "<!-- FLEET:START -->\n" + cards + "\n      " + html[end:],
+                    encoding="utf-8")
+    print("updated index.html fleet grid")
 
 
 def other_cards(current: dict) -> str:
@@ -126,7 +201,7 @@ def other_cards(current: dict) -> str:
               </div>
               <p data-i18n="fleet.{v['key']}.text"></p>
               <div class="card-foot">
-                <span class="price">${v['prices'][0]} <small data-i18n="fleet.from"></small></span>
+                <span class="price">${from_price(v)} <small data-i18n="fleet.from"></small></span>
                 <span class="link-arrow"><span data-i18n="cta.view"></span><svg aria-hidden="true" width="12" height="12"><use href="#i-arrow"></use></svg></span>
               </div>
             </div>
@@ -141,7 +216,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{en_name} with Chauffeur in Punta Cana | Just VIP Punta Cana</title>
-<meta name="description" content="Book the {en_name} with a professional chauffeur in Punta Cana. Airport transfers from ${p1} USD, hourly packages, written terms and 24/7 dispatch.">
+<meta name="description" content="Book the {en_name} with a professional chauffeur in Punta Cana. Private airport transfers from ${from_price} USD one way in Punta Cana and Cap Cana, round trips, written terms and 24/7 dispatch.">
 <link rel="canonical" href="https://justvippuntacana.com/fleet/{slug}.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -227,7 +302,7 @@ TEMPLATE = """<!DOCTYPE html>
       <div class="booking-card" id="quote">
         <div class="booking-price">
           <span class="label" data-i18n="veh.startingFrom">Starting from</span>
-          <span><span class="amount">${p1}</span> <span class="unit" data-i18n="veh.perTransfer">USD / one way in Punta Cana</span></span>
+          <span><span class="amount">${from_price}</span> <span class="unit" data-i18n="veh.perTransfer">USD / one way in Punta Cana</span></span>
           <a class="link-arrow" data-wa href="#quote-form"><span data-i18n="cta.check">Check availability</span></a>
         </div>
 
@@ -292,33 +367,22 @@ TEMPLATE = """<!DOCTYPE html>
 
       <div style="margin-top:3.2rem">
         <div class="pkg-head">
-          <h2 style="font-size:clamp(1.5rem,2.4vw,2rem)" data-i18n="veh.packages">Chauffeur packages</h2>
+          <h2 style="font-size:clamp(1.5rem,2.4vw,2rem)" data-i18n="veh.rates">Transfer rates</h2>
           <span data-i18n="veh.pricesIn">Prices in USD</span>
         </div>
-        <div class="pkg-grid">
-          <div class="pkg">
-            <b data-i18n="veh.pk1">One way</b>
-            <span class="amount">{p1}</span>
-            <small data-i18n="veh.pk1sub">Within Punta Cana</small>
-          </div>
-          <div class="pkg">
-            <b data-i18n="veh.pk2">3 hours</b>
-            <span class="amount">{p2}</span>
-            <small data-i18n="veh.pk2sub">Short errands</small>
-          </div>
-          <div class="pkg pkg--popular">
-            <span class="tag" data-i18n="veh.popular">Popular</span>
-            <b data-i18n="veh.pk3">5 hours</b>
-            <span class="amount">{p3}</span>
-            <small data-i18n="veh.pk3sub">Half day</small>
-          </div>
-          <div class="pkg">
-            <b data-i18n="veh.pk4">8 hours</b>
-            <span class="amount">{p4}</span>
-            <small data-i18n="veh.pk4sub">Full day</small>
-          </div>
-        </div>
-        <p class="pkg-note" data-i18n="veh.pkgNote">Starting rates — the final price varies with route, date and add-ons.</p>
+        <table class="rate-table">
+          <thead>
+            <tr>
+              <th scope="col" data-i18n="veh.zone">Zone</th>
+              <th scope="col" data-i18n="veh.oneWay">One way</th>
+              <th scope="col" data-i18n="veh.roundTrip">Round trip</th>
+            </tr>
+          </thead>
+          <tbody>
+{rate_rows}
+          </tbody>
+        </table>
+        <p class="pkg-note" data-i18n="veh.rateNote">Rates are per vehicle, not per passenger, and include the chauffeur. Other destinations are quoted on request.</p>
 
         <div class="chips">
           <span class="chip"><svg aria-hidden="true"><use href="#i-check"></use></svg><span data-i18n="veh.chip1">Chauffeur included</span></span>
@@ -421,7 +485,6 @@ def main() -> None:
     out_dir.mkdir(exist_ok=True)
 
     for v in VEHICLES:
-        p1, p2, p3, p4 = v["prices"]
         slides, thumbs, total = gallery(v)
         page = TEMPLATE.format(
             slug=v["slug"],
@@ -429,7 +492,8 @@ def main() -> None:
             cls=v["cls"],
             symbol=v["symbol"],
             en_name=v["en"],
-            p1=p1, p2=p2, p3=p3, p4=p4,
+            from_price=from_price(v),
+            rate_rows=rates_table(v),
             sprite=sprite_markup,
             gallery_slides=slides,
             gallery_thumbs=thumbs,
@@ -438,6 +502,15 @@ def main() -> None:
         )
         (out_dir / f"{v['slug']}.html").write_text(page, encoding="utf-8")
         print("wrote fleet/%s.html" % v["slug"])
+
+    # drop pages for vehicles that are no longer in the table
+    current = {f"{v['slug']}.html" for v in VEHICLES}
+    for stale in out_dir.glob("*.html"):
+        if stale.name not in current:
+            stale.unlink()
+            print("removed stale fleet/%s" % stale.name)
+
+    write_home_grid()
 
 
 if __name__ == "__main__":

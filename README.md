@@ -58,8 +58,23 @@ var CONFIG = {
 };
 ```
 
-Also replace the placeholder email (`info@justvippuntacana.com`), the indicative
-"from" prices in the fleet cards, and the canonical URL in `index.html`.
+Also replace the placeholder email (`info@justvippuntacana.com`) and the
+canonical URL in `index.html`.
+
+## Fleet and rates
+
+The five vehicles and their rates live in one table at the top of
+`tools/build-fleet.py`, which generates both the detail pages and the home-page
+fleet grid (between the `FLEET:START` / `FLEET:END` markers in `index.html`).
+Rates are `(zone key, one way, round trip)` per vehicle; an empty string renders
+as "On request". Vehicle names, capacities and descriptions are i18n keys
+(`fleet.c1`-`fleet.c5`). Change either, then rebuild:
+
+```bash
+python3 tools/build-fleet.py
+```
+
+Removing a vehicle from the table also deletes its stale page.
 
 The quote form has no backend — it composes the request and opens WhatsApp with
 the message pre-filled. Point it at a form endpoint if you'd rather collect
