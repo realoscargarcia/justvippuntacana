@@ -27,9 +27,16 @@ VEHICLES = [
         "key": "c2",
         "symbol": "i-suv",
         "cls": "veh.cls.suv",
-        "en": "Premium SUV",
-        "es": "SUV Premium",
+        "en": "Cadillac Escalade 2023",
+        "es": "Cadillac Escalade 2023",
         "prices": ("110", "240", "340", "490"),
+        "images": [
+            ("escalade-1-exterior", "veh.g1", "Cadillac Escalade 2023 exterior"),
+            ("escalade-2-interior", "veh.g2", "Cadillac Escalade 2023 front cabin"),
+            ("escalade-3-rear", "veh.g4", "Cadillac Escalade 2023 rear cabin"),
+            ("escalade-4-cockpit", "veh.g5", "Cadillac Escalade 2023 driver cockpit"),
+            ("escalade-5-detail", "veh.g3", "Cadillac Escalade 2023 centre console"),
+        ],
     },
     {
         "slug": "vip-van",
@@ -52,6 +59,55 @@ def sprite() -> str:
     return match.group(1)
 
 
+PLACEHOLDER_SLIDES = [
+    ("slide--a", "{symbol}", "veh.g1", "Exterior"),
+    ("slide--b", "i-seat", "veh.g2", "Interior"),
+    ("slide--c", "i-detail", "veh.g3", "Detail"),
+]
+
+
+def gallery(v: dict) -> tuple:
+    """Return (slides, thumbs, total) — real photography when the vehicle has it."""
+    images = v.get("images")
+    if not images:
+        slides, thumbs = [], []
+        for i, (cls, sym, key, label) in enumerate(PLACEHOLDER_SLIDES):
+            sym = sym.format(symbol=v["symbol"])
+            active = ' data-active="true"' if i == 0 else ""
+            current = ' aria-current="true"' if i == 0 else ""
+            slides.append(f"""          <div class="slide {cls}"{active}>
+            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#{sym}"></use></svg>
+            <span class="slide-label" data-i18n="{key}">{label}</span>
+          </div>""")
+            thumbs.append(f"""          <button class="thumb {cls}" type="button" data-gallery-thumb="{i}"{current} aria-label="{label}">
+            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#{sym}"></use></svg>
+          </button>""")
+        return "\n".join(slides), "\n".join(thumbs), len(PLACEHOLDER_SLIDES)
+
+    slides, thumbs = [], []
+    for i, (name, key, alt) in enumerate(images):
+        active = ' data-active="true"' if i == 0 else ""
+        current = ' aria-current="true"' if i == 0 else ""
+        loading = "eager" if i == 0 else "lazy"
+        slides.append(f"""          <div class="slide slide--photo"{active}>
+            <img src="../assets/img/fleet/{name}.jpg" alt="{alt}" loading="{loading}" decoding="async">
+            <span class="slide-label" data-i18n="{key}"></span>
+          </div>""")
+        thumbs.append(f"""          <button class="thumb thumb--photo" type="button" data-gallery-thumb="{i}"{current} aria-label="{alt}">
+            <img src="../assets/img/fleet/{name}-thumb.jpg" alt="" loading="lazy" decoding="async">
+          </button>""")
+    return "\n".join(slides), "\n".join(thumbs), len(images)
+
+
+def card_media(v: dict, prefix: str = "") -> str:
+    """Card thumbnail: a photo when the vehicle has one, else the SVG silhouette."""
+    images = v.get("images")
+    if images:
+        return (f'<img class="veh-photo" src="{prefix}assets/img/fleet/{images[0][0]}-thumb.jpg" '
+                f'alt="{images[0][2]}" loading="lazy" decoding="async">')
+    return f'<svg class="veh" viewBox="0 0 120 54" aria-hidden="true"><use href="#{v["symbol"]}"></use></svg>'
+
+
 def other_cards(current: dict) -> str:
     out = []
     for v in VEHICLES:
@@ -60,7 +116,7 @@ def other_cards(current: dict) -> str:
         out.append(f"""        <article class="card">
           <a href="{v['slug']}.html">
             <div class="card-media">
-              <svg class="veh" viewBox="0 0 120 54" aria-hidden="true"><use href="#{v['symbol']}"></use></svg>
+              {card_media(v, "../")}
             </div>
             <div class="card-body">
               <h3 data-i18n="fleet.{v['key']}.name">{v['en']}</h3>
@@ -153,36 +209,17 @@ TEMPLATE = """<!DOCTYPE html>
       <!-- gallery -->
       <div class="gallery" id="gallery">
         <div class="gallery-stage">
-          <span class="gallery-count"><b data-gallery-current>1</b> / 3</span>
+          <span class="gallery-count"><b data-gallery-current>1</b> / {gallery_total}</span>
           <button class="gallery-nav gallery-nav--prev" type="button" data-gallery-prev aria-label="Previous image">
             <svg aria-hidden="true"><use href="#i-chev"></use></svg>
           </button>
           <button class="gallery-nav gallery-nav--next" type="button" data-gallery-next aria-label="Next image">
             <svg aria-hidden="true"><use href="#i-chev"></use></svg>
           </button>
-          <div class="slide slide--a" data-active="true">
-            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#{symbol}"></use></svg>
-            <span class="slide-label" data-i18n="veh.g1">Exterior</span>
-          </div>
-          <div class="slide slide--b">
-            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#i-seat"></use></svg>
-            <span class="slide-label" data-i18n="veh.g2">Interior</span>
-          </div>
-          <div class="slide slide--c">
-            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#i-detail"></use></svg>
-            <span class="slide-label" data-i18n="veh.g3">Detail</span>
-          </div>
+{gallery_slides}
         </div>
         <div class="thumbs">
-          <button class="thumb slide--a" type="button" data-gallery-thumb="0" aria-current="true" aria-label="Exterior">
-            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#{symbol}"></use></svg>
-          </button>
-          <button class="thumb slide--b" type="button" data-gallery-thumb="1" aria-label="Interior">
-            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#i-seat"></use></svg>
-          </button>
-          <button class="thumb slide--c" type="button" data-gallery-thumb="2" aria-label="Detail">
-            <svg viewBox="0 0 120 54" aria-hidden="true"><use href="#i-detail"></use></svg>
-          </button>
+{gallery_thumbs}
         </div>
       </div>
 
@@ -385,6 +422,7 @@ def main() -> None:
 
     for v in VEHICLES:
         p1, p2, p3, p4 = v["prices"]
+        slides, thumbs, total = gallery(v)
         page = TEMPLATE.format(
             slug=v["slug"],
             key=v["key"],
@@ -393,6 +431,9 @@ def main() -> None:
             en_name=v["en"],
             p1=p1, p2=p2, p3=p3, p4=p4,
             sprite=sprite_markup,
+            gallery_slides=slides,
+            gallery_thumbs=thumbs,
+            gallery_total=total,
             other_cards=other_cards(v),
         )
         (out_dir / f"{v['slug']}.html").write_text(page, encoding="utf-8")

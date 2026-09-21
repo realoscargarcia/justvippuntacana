@@ -765,3 +765,10 @@ p:last-child { margin-bottom: 0; }
 /* two-up related-vehicle grid on detail pages */
 .fleet-grid--two { grid-template-columns: repeat(2, 1fr); max-width: 840px; }
 @media (max-width: 860px) { .fleet-grid--two { grid-template-columns: 1fr; } }
+
+/* real vehicle photography */
+.slide--photo { background: var(--white); }
+.slide--photo img { width: 100%; height: 100%; object-fit: cover; }
+.thumb--photo { padding: 0; overflow: hidden; }
+.thumb--photo img { width: 100%; height: 100%; object-fit: cover; }
+.card-media .veh-photo { width: 100%; height: 100%; object-fit: cover; }

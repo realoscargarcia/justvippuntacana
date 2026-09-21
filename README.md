@@ -70,5 +70,18 @@ The hero photograph lives in `assets/img/` (`hero.jpg` for desktop, the taller
 it, and keep them cropped to roughly the same framing so the overlay still
 keeps the headline readable.
 
-Vehicle images are inline SVG placeholders; drop real photography into
-`assets/img/` and swap the `.card-media` / `.service-media` blocks when it's ready.
+## Fleet photography
+
+Real photos live in `assets/img/fleet/` as `<name>.jpg` (1200x900) plus a
+`<name>-thumb.jpg` (400x300), all cropped to 4:3. A vehicle gets them by listing
+them in its `images` entry in `tools/build-fleet.py`:
+
+```python
+"images": [("escalade-1-exterior", "veh.g1", "alt text"), ...]
+```
+
+The second value is the i18n key for the slide label (`veh.g1`-`veh.g5`:
+exterior, interior, detail, rear cabin, cockpit). The gallery, its counter and
+the card thumbnail all follow the list, so the count is whatever you supply.
+The Cadillac Escalade has real photography; the sedan and van still fall back
+to inline SVG silhouettes until you add theirs.
