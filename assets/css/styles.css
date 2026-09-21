@@ -200,20 +200,38 @@ p:last-child { margin-bottom: 0; }
   display: flex;
   align-items: center;
   padding: calc(var(--nav-h) + 80px) 0 120px;
-  background:
-    linear-gradient(90deg, rgba(8, 10, 10, 0.94) 0%, rgba(8, 10, 10, 0.78) 45%, rgba(8, 10, 10, 0.45) 100%),
-    radial-gradient(120% 90% at 78% 40%, #2c3b34 0%, #131a18 55%, #080a0a 100%);
+  background: #080a0a;
   color: var(--white);
   overflow: hidden;
+}
+
+/* photographic backdrop */
+.hero-media { position: absolute; inset: 0; z-index: 0; }
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 46%;
+}
+/* legibility wash over the photo */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(6, 8, 9, 0.9) 0%, rgba(6, 8, 9, 0.68) 46%, rgba(6, 8, 9, 0.24) 100%),
+    linear-gradient(to bottom, rgba(6, 8, 9, 0.62) 0%, rgba(6, 8, 9, 0.12) 38%, rgba(6, 8, 9, 0.3) 100%);
 }
 .hero::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 130px;
+  z-index: 2;
+  height: 96px;
   background: linear-gradient(to bottom, rgba(246, 244, 239, 0), var(--bone));
 }
-.hero-inner { position: relative; z-index: 2; max-width: 660px; }
+.hero-inner { position: relative; z-index: 3; max-width: 660px; }
 .hero .rule { width: 56px; height: 1px; background: var(--gold); margin-bottom: 2rem; }
 .hero p.lede { color: rgba(255, 255, 255, 0.78); max-width: 34rem; margin: 1.8rem 0 2rem; }
 .hero-meta {
@@ -230,16 +248,6 @@ p:last-child { margin-bottom: 0; }
 .hero-meta span:not(:last-child)::after { content: ""; display: inline-block; width: 1px; height: 11px; background: rgba(255,255,255,0.28); margin-left: 1.4rem; vertical-align: -1px; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 1rem; }
 
-/* decorative palm silhouette */
-.hero-art {
-  position: absolute;
-  right: -40px;
-  bottom: 0;
-  width: min(52vw, 720px);
-  opacity: 0.5;
-  z-index: 1;
-  pointer-events: none;
-}
 
 /* ---------- stats ---------- */
 .stats {
@@ -501,7 +509,12 @@ p:last-child { margin-bottom: 0; }
   .hero-meta { gap: 0.8rem 1.2rem; }
   .hero-meta span::after { display: none !important; }
   .hero { min-height: auto; padding-bottom: 90px; }
-  .hero-art { opacity: 0.28; right: -80px; width: 90vw; }
+  /* on phones the copy stacks over the photo, so wash it top-to-bottom */
+  .hero::before {
+    background:
+      linear-gradient(to bottom, rgba(6, 8, 9, 0.88) 0%, rgba(6, 8, 9, 0.62) 42%, rgba(6, 8, 9, 0.58) 100%);
+  }
+  .hero-media img { object-position: center 55%; }
   .footer-grid { grid-template-columns: 1fr; }
 }
 

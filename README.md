@@ -65,5 +65,10 @@ The quote form has no backend — it composes the request and opens WhatsApp wit
 the message pre-filled. Point it at a form endpoint if you'd rather collect
 leads by email.
 
+The hero photograph lives in `assets/img/` (`hero.jpg` for desktop, the taller
+`hero-mobile.jpg` served below 700px via `<picture>`). Swap both if you change
+it, and keep them cropped to roughly the same framing so the overlay still
+keeps the headline readable.
+
 Vehicle images are inline SVG placeholders; drop real photography into
 `assets/img/` and swap the `.card-media` / `.service-media` blocks when it's ready.
