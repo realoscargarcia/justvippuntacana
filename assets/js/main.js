@@ -57,8 +57,16 @@
   }
 
   /* ---------------- contact links ---------------- */
+  /* Vehicle pages carry data-veh-key so the greeting names the car. */
+  function greeting() {
+    var key = document.body.getAttribute("data-veh-key");
+    var name = key ? t(key) : null;
+    if (name) return (t("wa.vehicle") || "") + " " + name + ".";
+    return t("wa.greeting") || "";
+  }
+
   function waHref(message) {
-    return "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(message || t("wa.greeting") || "");
+    return "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(message || greeting());
   }
 
   function refreshWhatsAppLinks() {
@@ -131,7 +139,7 @@
       }
 
       var lines = [
-        t("wa.greeting"),
+        greeting(),
         "",
         t("form.name") + ": " + name,
         t("form.phone") + ": " + (data.get("code") || "") + " " + phone,
@@ -148,6 +156,40 @@
     });
   }
 
+  /* ---------------- vehicle gallery ---------------- */
+  function initGallery() {
+    var gallery = document.getElementById("gallery");
+    if (!gallery) return;
+
+    var slides = gallery.querySelectorAll(".slide");
+    var thumbs = gallery.querySelectorAll("[data-gallery-thumb]");
+    var counter = gallery.querySelector("[data-gallery-current]");
+    var index = 0;
+
+    function show(next) {
+      index = (next + slides.length) % slides.length;
+      slides.forEach(function (slide, i) {
+        slide.setAttribute("data-active", String(i === index));
+      });
+      thumbs.forEach(function (thumb, i) {
+        if (i === index) thumb.setAttribute("aria-current", "true");
+        else thumb.removeAttribute("aria-current");
+      });
+      if (counter) counter.textContent = String(index + 1);
+    }
+
+    gallery.querySelector("[data-gallery-prev]").addEventListener("click", function () { show(index - 1); });
+    gallery.querySelector("[data-gallery-next]").addEventListener("click", function () { show(index + 1); });
+    thumbs.forEach(function (thumb, i) {
+      thumb.addEventListener("click", function () { show(i); });
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowLeft") show(index - 1);
+      if (event.key === "ArrowRight") show(index + 1);
+    });
+  }
+
   /* ---------------- boot ---------------- */
   document.addEventListener("DOMContentLoaded", function () {
     var yearEl = document.getElementById("year");
@@ -156,6 +198,7 @@
     initContacts();
     initNav();
     initReveal();
+    initGallery();
     initForm();
 
     applyLang(detectLang());

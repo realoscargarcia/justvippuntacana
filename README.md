@@ -15,11 +15,28 @@ python3 -m http.server 8000
 ## Structure
 
 ```
-index.html            markup (English is the inline default)
-assets/css/styles.css design system + layout
-assets/js/i18n.js     EN/ES dictionary (all copy lives here)
-assets/js/main.js     language switch, nav, reveal, quote form
+index.html               home page (English is the inline default)
+fleet/*.html             vehicle detail pages — GENERATED, do not edit by hand
+tools/build-fleet.py     generates fleet/ from one template + the vehicle table
+assets/css/styles.css    design system + layout
+assets/js/i18n.js        EN/ES dictionary (all copy lives here)
+assets/js/main.js        language switch, nav, reveal, gallery, quote form
 ```
+
+## Vehicle pages
+
+`fleet/executive-sedan.html`, `fleet/premium-suv.html` and `fleet/vip-van.html`
+are generated so they never drift apart. Edit the template, the vehicle table
+(names, prices, icons) or the shared SVG sprite in `index.html`, then rebuild:
+
+```bash
+python3 tools/build-fleet.py
+```
+
+Each page has a breadcrumb, gallery with thumbnails, a sticky booking card with
+the starting price and quote form, an "at a glance" spec grid, the package
+price table, a trust band and the other two vehicles. The WhatsApp message is
+pre-filled with the vehicle name in the visitor's language.
 
 ## Language
 

@@ -518,3 +518,237 @@ p:last-child { margin-bottom: 0; }
   .reveal { opacity: 1; transform: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ==========================================================================
+   Vehicle detail page
+   ========================================================================== */
+.page { padding-top: var(--nav-h); }
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 2.2rem 0 1.6rem;
+}
+.breadcrumb a:hover { color: var(--gold-deep); }
+.breadcrumb .sep { color: var(--line); }
+.breadcrumb [aria-current] { color: var(--text); }
+
+.veh-head { padding-bottom: 2.4rem; }
+.veh-head h1 { font-size: clamp(2rem, 4.4vw, 3.4rem); }
+.veh-head h1 .muted { color: #8b8b93; }
+.veh-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1.1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.veh-facts .ok { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text); }
+.veh-facts .ok svg { width: 17px; height: 17px; color: var(--gold-deep); }
+.veh-facts .sep { width: 1px; height: 14px; background: var(--line); }
+
+.veh-layout {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: clamp(1.5rem, 3vw, 2.8rem);
+  align-items: start;
+  padding-bottom: clamp(48px, 7vw, 90px);
+}
+
+/* gallery */
+.gallery { position: relative; }
+.gallery-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--bone-dim);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+}
+.slide[data-active="true"] { opacity: 1; }
+.slide svg { width: 68%; max-height: 62%; }
+.slide--a { background: linear-gradient(135deg, #eceae3 0%, #d8d4c9 100%); }
+.slide--b { background: linear-gradient(135deg, #e6e2d8 0%, #cfc9ba 100%); }
+.slide--c { background: linear-gradient(135deg, #22302a 0%, #141d19 100%); }
+.slide-label {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.8rem;
+}
+.gallery-count {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.75rem;
+}
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.25s var(--ease);
+}
+.gallery-nav:hover { background: var(--white); }
+.gallery-nav svg { width: 16px; height: 16px; }
+.gallery-nav--prev { left: 14px; }
+.gallery-nav--next { right: 14px; }
+.gallery-nav--next svg { transform: rotate(180deg); }
+.thumbs { display: flex; gap: 0.8rem; margin-top: 0.9rem; }
+.thumb {
+  flex: 0 0 116px;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--line);
+  background: var(--bone-dim);
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.25s var(--ease);
+}
+.thumb svg { width: 70%; }
+.thumb[aria-current="true"] { border-color: var(--gold); border-width: 2px; }
+
+/* booking card */
+.booking-card { background: var(--white); border: 1px solid var(--line); position: sticky; top: calc(var(--nav-h) + 20px); }
+.booking-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 1.7rem clamp(1.4rem, 2.4vw, 2rem);
+  border-bottom: 1px solid var(--line);
+}
+.booking-price .label { display: block; width: 100%; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+.booking-price .amount { font-family: var(--serif); font-size: clamp(2rem, 3.4vw, 2.6rem); }
+.booking-price .unit { color: var(--muted); font-size: 0.92rem; }
+.booking-price .link-arrow { border-bottom-color: var(--gold); color: var(--gold-deep); }
+.booking-card .form-card { border: 0; padding-top: 1.8rem; }
+
+/* at a glance */
+.glance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  background: var(--white);
+}
+.glance-grid div {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.15rem 1.3rem;
+  border-bottom: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+.glance-grid div:nth-child(3n + 1) { border-left: 0; }
+.glance-grid svg { width: 19px; height: 19px; color: var(--gold-deep); flex: none; }
+
+/* packages */
+.pkg-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.6rem; }
+.pkg-head span { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.pkg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.pkg {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--line);
+  padding: 1.5rem 1.4rem;
+}
+.pkg--popular { border-color: var(--gold); border-width: 2px; }
+.pkg .tag {
+  position: absolute;
+  top: -11px;
+  left: 1.2rem;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.65rem;
+}
+.pkg b { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.pkg .amount { display: block; font-family: var(--serif); font-size: 2rem; margin: 0.55rem 0 0.3rem; }
+.pkg small { color: var(--muted); font-size: 0.85rem; }
+.pkg-note { color: var(--muted); font-size: 0.9rem; margin-top: 1.4rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2.4rem; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--line);
+  background: var(--white);
+  padding: 0.75rem 1.1rem;
+  font-size: 0.88rem;
+}
+.chip svg { width: 16px; height: 16px; color: var(--gold-deep); }
+
+/* trust band */
+.trust { background: var(--white); border-top: 1px solid var(--line); padding: clamp(48px, 6vw, 80px) 0; }
+.trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); }
+.trust-grid div { padding: 2.4rem 1.2rem; text-align: center; border-left: 1px solid var(--line); }
+.trust-grid div:first-child { border-left: 0; }
+.trust-grid svg { width: 24px; height: 24px; color: var(--gold-deep); margin-bottom: 1rem; }
+.trust-grid b { display: block; font-family: var(--serif); font-size: clamp(1.7rem, 2.6vw, 2.2rem); font-weight: 500; }
+.trust-grid span { display: block; margin-top: 0.5rem; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+@media (max-width: 1024px) {
+  .veh-layout { grid-template-columns: 1fr; }
+  .booking-card { position: static; }
+  .trust-grid { grid-template-columns: repeat(2, 1fr); }
+  .trust-grid div:nth-child(3) { border-left: 0; }
+  .trust-grid div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+}
+
+@media (max-width: 680px) {
+  .pkg-grid { grid-template-columns: repeat(2, 1fr); }
+  .glance-grid { grid-template-columns: 1fr; }
+  .glance-grid div { border-left: 0; }
+  .veh-facts .sep { display: none; }
+  .thumb { flex-basis: 84px; }
+}
+
+@media (max-width: 420px) {
+  .pkg-grid { grid-template-columns: 1fr; }
+  .trust-grid { grid-template-columns: 1fr; }
+  .trust-grid div { border-left: 0; border-top: 1px solid var(--line); }
+  .trust-grid div:first-child { border-top: 0; }
+}
+
+/* two-up related-vehicle grid on detail pages */
+.fleet-grid--two { grid-template-columns: repeat(2, 1fr); max-width: 840px; }
+@media (max-width: 860px) { .fleet-grid--two { grid-template-columns: 1fr; } }
