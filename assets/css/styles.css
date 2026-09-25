@@ -811,32 +811,42 @@ p:last-child { margin-bottom: 0; }
 }
 
 /* ==========================================================================
-   Phones: lay the fleet cards out horizontally so the list stays scannable
+   Phones: the fleet becomes a horizontal swipe carousel
    ========================================================================== */
 @media (max-width: 700px) {
-  .card > a { display: grid; grid-template-columns: 34% 1fr; align-items: stretch; }
-  .card-media {
-    aspect-ratio: auto;
-    height: 100%;
-    min-height: 150px;
+  .fleet-grid,
+  .fleet-grid--two {
+    display: flex;
+    grid-template-columns: none;
+    gap: 1rem;
+    /* bleed past the .wrap gutter so cards can run to the screen edge */
+    margin-inline: -24px;
+    padding: 4px 24px 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 24px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
   }
-  .card-media .veh { width: 92%; }
-  /* the category badge crowds a thumbnail this narrow; the name says it anyway */
-  .badge { display: none; }
-  .card-media .veh-photo { object-position: center 55%; }
-  .card-body { padding: 1.1rem 1.2rem; gap: 0.55rem; }
-  .card-body h3 { font-size: 1.12rem; }
-  /* the blurb needs a wider column than a phone gives it */
-  .card-body > p { display: none; }
-  .specs { flex-wrap: wrap; gap: 0.35rem 0.8rem; font-size: 0.63rem; letter-spacing: 0.08em; }
+  .fleet-grid::-webkit-scrollbar,
+  .fleet-grid--two::-webkit-scrollbar { display: none; }
+
+  /* the sliver of the next card is what says "swipe" */
+  .fleet-grid .card,
+  .fleet-grid--two .card {
+    flex: 0 0 78%;
+    max-width: 320px;
+    scroll-snap-align: start;
+  }
+  .card:hover { transform: none; box-shadow: none; }
+  .card-body { padding: 1.4rem; gap: 0.8rem; }
+  .card-body h3 { font-size: 1.2rem; }
+  .specs { flex-wrap: wrap; gap: 0.4rem 1rem; }
   .specs span { white-space: nowrap; }
-  .card-foot {
-    padding-top: 0.9rem;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.8rem;
-  }
-  .price { font-size: 1.25rem; }
-  .card-foot .link-arrow { font-size: 0.66rem; letter-spacing: 0.1em; padding-bottom: 3px; }
-  .card:hover { transform: none; }
+  /* keep "$60 one way" and the CTA on one line each */
+  .card-foot { flex-wrap: wrap; gap: 0.5rem 0.8rem; }
+  .price,
+  .card-foot .link-arrow { white-space: nowrap; }
+  .card-foot .link-arrow { font-size: 0.68rem; letter-spacing: 0.1em; }
 }
