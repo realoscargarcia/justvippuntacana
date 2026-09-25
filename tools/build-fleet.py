@@ -147,13 +147,21 @@ def card_media(v: dict, prefix: str = "") -> str:
     return f'<svg class="veh" viewBox="0 0 120 54" aria-hidden="true"><use href="#{v["symbol"]}"></use></svg>'
 
 
-def home_card(v: dict) -> str:
-    """One fleet card for the home page grid."""
+def round_price(v: dict) -> str:
+    """Round-trip rate of the vehicle's first zone."""
+    return v["rates"][0][2]
+
+
+def card(v: dict, prefix: str = "", href_prefix: str = "fleet/") -> str:
+    """One fleet card, shared by the home grid and the related strip."""
+    round_trip = round_price(v)
+    round_cell = (f"<b>${round_trip}</b>" if round_trip
+                  else '<b class="ask" data-i18n="veh.onRequest"></b>')
     return f"""        <article class="card reveal">
-          <a href="fleet/{v['slug']}.html">
+          <a class="card-link" href="{href_prefix}{v['slug']}.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.{v['key']}.badge"></span>
-              {card_media(v)}
+              {card_media(v, prefix)}
             </div>
             <div class="card-body">
               <h3 data-i18n="fleet.{v['key']}.name">{v['en']}</h3>
@@ -161,14 +169,30 @@ def home_card(v: dict) -> str:
                 <span><svg aria-hidden="true"><use href="#i-users"></use></svg><span data-i18n="fleet.{v['key']}.pax"></span></span>
                 <span><svg aria-hidden="true"><use href="#i-case"></use></svg><span data-i18n="fleet.{v['key']}.bags"></span></span>
               </div>
-              <p data-i18n="fleet.{v['key']}.text"></p>
-              <div class="card-foot">
-                <span class="price">${from_price(v)} <small data-i18n="fleet.from"></small></span>
-                <span class="link-arrow"><span data-i18n="cta.view"></span><svg aria-hidden="true" width="12" height="12"><use href="#i-arrow"></use></svg></span>
+              <p class="card-text" data-i18n="fleet.{v['key']}.text"></p>
+              <div class="card-rates">
+                <div>
+                  <span data-i18n="veh.oneWay"></span>
+                  <b>${from_price(v)}</b>
+                </div>
+                <div>
+                  <span data-i18n="veh.roundTrip"></span>
+                  {round_cell}
+                </div>
               </div>
+              <span class="card-cta">
+                <span data-i18n="cta.view"></span>
+                <svg aria-hidden="true" width="12" height="12"><use href="#i-arrow"></use></svg>
+              </span>
             </div>
           </a>
         </article>"""
+
+
+def home_card(v: dict) -> str:
+    return card(v)
+
+
 
 
 def write_home_grid() -> None:
@@ -184,30 +208,8 @@ def write_home_grid() -> None:
 
 
 def other_cards(current: dict) -> str:
-    out = []
-    for v in VEHICLES:
-        if v["slug"] == current["slug"]:
-            continue
-        out.append(f"""        <article class="card">
-          <a href="{v['slug']}.html">
-            <div class="card-media">
-              {card_media(v, "../")}
-            </div>
-            <div class="card-body">
-              <h3 data-i18n="fleet.{v['key']}.name">{v['en']}</h3>
-              <div class="specs">
-                <span><svg aria-hidden="true"><use href="#i-users"></use></svg><span data-i18n="fleet.{v['key']}.pax"></span></span>
-                <span><svg aria-hidden="true"><use href="#i-case"></use></svg><span data-i18n="fleet.{v['key']}.bags"></span></span>
-              </div>
-              <p data-i18n="fleet.{v['key']}.text"></p>
-              <div class="card-foot">
-                <span class="price">${from_price(v)} <small data-i18n="fleet.from"></small></span>
-                <span class="link-arrow"><span data-i18n="cta.view"></span><svg aria-hidden="true" width="12" height="12"><use href="#i-arrow"></use></svg></span>
-              </div>
-            </div>
-          </a>
-        </article>""")
-    return "\n".join(out)
+    return "\n".join(card(v, prefix="../", href_prefix="")
+                     for v in VEHICLES if v["slug"] != current["slug"])
 
 
 TEMPLATE = """<!DOCTYPE html>
