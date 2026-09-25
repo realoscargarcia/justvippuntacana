@@ -573,9 +573,10 @@ p:last-child { margin-bottom: 0; }
   align-items: start;
   padding-bottom: clamp(48px, 7vw, 90px);
 }
+.veh-layout > * { min-width: 0; }
 
 /* gallery */
-.gallery { position: relative; }
+.gallery { position: relative; min-width: 0; }
 .gallery-stage {
   position: relative;
   aspect-ratio: 4 / 3;
@@ -638,7 +639,15 @@ p:last-child { margin-bottom: 0; }
 .gallery-nav--prev { left: 14px; }
 .gallery-nav--next { right: 14px; }
 .gallery-nav--next svg { transform: rotate(180deg); }
-.thumbs { display: flex; gap: 0.8rem; margin-top: 0.9rem; }
+.thumbs {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.thumbs::-webkit-scrollbar { display: none; }
 .thumb {
   flex: 0 0 116px;
   aspect-ratio: 4 / 3;
@@ -752,7 +761,7 @@ p:last-child { margin-bottom: 0; }
   .glance-grid { grid-template-columns: 1fr; }
   .glance-grid div { border-left: 0; }
   .veh-facts .sep { display: none; }
-  .thumb { flex-basis: 84px; }
+  .thumb { flex-basis: 76px; }
 }
 
 @media (max-width: 420px) {
@@ -799,4 +808,35 @@ p:last-child { margin-bottom: 0; }
   .rate-table th, .rate-table td { padding: 0.9rem 0.8rem; }
   .rate-table tbody th { font-size: 0.88rem; }
   .rate { font-size: 1.2rem; }
+}
+
+/* ==========================================================================
+   Phones: lay the fleet cards out horizontally so the list stays scannable
+   ========================================================================== */
+@media (max-width: 700px) {
+  .card > a { display: grid; grid-template-columns: 34% 1fr; align-items: stretch; }
+  .card-media {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 150px;
+  }
+  .card-media .veh { width: 92%; }
+  /* the category badge crowds a thumbnail this narrow; the name says it anyway */
+  .badge { display: none; }
+  .card-media .veh-photo { object-position: center 55%; }
+  .card-body { padding: 1.1rem 1.2rem; gap: 0.55rem; }
+  .card-body h3 { font-size: 1.12rem; }
+  /* the blurb needs a wider column than a phone gives it */
+  .card-body > p { display: none; }
+  .specs { flex-wrap: wrap; gap: 0.35rem 0.8rem; font-size: 0.63rem; letter-spacing: 0.08em; }
+  .specs span { white-space: nowrap; }
+  .card-foot {
+    padding-top: 0.9rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.8rem;
+  }
+  .price { font-size: 1.25rem; }
+  .card-foot .link-arrow { font-size: 0.66rem; letter-spacing: 0.1em; padding-bottom: 3px; }
+  .card:hover { transform: none; }
 }
