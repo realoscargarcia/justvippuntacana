@@ -122,6 +122,51 @@
           </a>
         </div>
       </div>
+
+      <!-- trip search: the main way in -->
+      <form class="booking" id="booking" novalidate>
+        <div class="booking-fields">
+          <label class="bk-field">
+            <span data-i18n="book.pickup">Pickup</span>
+            <input id="bk-from" name="from" type="text" list="bk-places" autocomplete="off"
+                   data-i18n-placeholder="book.placePh" placeholder="Hotel, area or address" required>
+          </label>
+          <label class="bk-field">
+            <span data-i18n="book.dropoff">Drop-off</span>
+            <input id="bk-to" name="to" type="text" list="bk-places" autocomplete="off"
+                   data-i18n-placeholder="book.placePh" placeholder="Hotel, area or address" required>
+          </label>
+          <label class="bk-field bk-field--xs">
+            <span data-i18n="book.date">Date</span>
+            <input id="bk-date" name="date" type="date" required>
+          </label>
+          <label class="bk-field bk-field--xs">
+            <span data-i18n="book.time">Pickup time</span>
+            <input id="bk-time" name="time" type="time" value="12:00">
+          </label>
+          <label class="bk-field bk-field--xs">
+            <span data-i18n="book.pax">Passengers</span>
+            <select id="bk-pax" name="pax">
+              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+              <option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
+              <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+              <option value="14">14</option>
+            </select>
+          </label>
+          <button class="btn btn--dark bk-submit" type="submit" data-i18n="book.cta">See options</button>
+        </div>
+        <p class="bk-error" id="bk-error" role="alert"></p>
+      </form>
+
+      <datalist id="bk-places">
+        <option value="Punta Cana International Airport (PUJ)"></option>
+        <option value="Bávaro"></option>
+        <option value="Cap Cana"></option>
+        <option value="Uvero Alto"></option>
+        <option value="Punta Cana Village"></option>
+        <option value="La Romana"></option>
+        <option value="Santo Domingo"></option>
+      </datalist>
     </div>
   </section>
 
@@ -141,10 +186,10 @@
       <div class="section-head reveal">
         <div>
           <p class="eyebrow" data-i18n="fleet.eyebrow">Choose early</p>
-          <h2 data-i18n="fleet.title">Selected cars for a chauffeur service in Punta Cana</h2>
+          <h2 id="fleet-title" data-i18n="fleet.title">Selected cars for a chauffeur service in Punta Cana</h2>
         </div>
         <div>
-          <p class="lede" data-i18n="fleet.lede">Start with the kind of journey you are planning. These fleet options cover executive travel, larger vehicles and family or group bookings without making you search the full fleet first.</p>
+          <p class="lede" id="fleet-lede" data-i18n="fleet.lede">Start with the kind of journey you are planning. These fleet options cover executive travel, larger vehicles and family or group bookings without making you search the full fleet first.</p>
           <p class="note">
             <svg aria-hidden="true"><use href="#i-check"></use></svg>
             <span data-i18n="fleet.note">Exact vehicle allocation and availability are confirmed in writing before booking.</span>
@@ -152,9 +197,20 @@
         </div>
       </div>
 
+      <div class="trip-bar" id="trip-bar" hidden>
+        <div class="trip-route">
+          <svg aria-hidden="true"><use href="#i-pin"></use></svg>
+          <span><b id="trip-from"></b> <span class="arrow">&rarr;</span> <b id="trip-to"></b></span>
+        </div>
+        <div class="trip-meta" id="trip-meta"></div>
+        <button class="trip-edit" type="button" id="trip-edit" data-i18n="book.change">Change search</button>
+      </div>
+
+      <p class="trip-empty" id="trip-empty" hidden data-i18n="book.noneFit">No vehicle in the fleet seats that many passengers — message us and we will arrange two vehicles.</p>
+
       <div class="fleet-grid">
 <!-- FLEET:START -->
-        <article class="card reveal">
+        <article class="card reveal" data-seats="6">
           <a class="card-link" href="fleet/lincoln-navigator-2018.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.c1.badge"></span>
@@ -184,7 +240,7 @@
             </div>
           </a>
         </article>
-        <article class="card reveal">
+        <article class="card reveal" data-seats="6">
           <a class="card-link" href="fleet/cadillac-escalade-2023.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.c2.badge"></span>
@@ -214,7 +270,7 @@
             </div>
           </a>
         </article>
-        <article class="card reveal">
+        <article class="card reveal" data-seats="6">
           <a class="card-link" href="fleet/chevrolet-suburban-high-country-2023.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.c3.badge"></span>
@@ -244,7 +300,7 @@
             </div>
           </a>
         </article>
-        <article class="card reveal">
+        <article class="card reveal" data-seats="6">
           <a class="card-link" href="fleet/chevrolet-suburban-2018.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.c4.badge"></span>
@@ -274,7 +330,7 @@
             </div>
           </a>
         </article>
-        <article class="card reveal">
+        <article class="card reveal" data-seats="14">
           <a class="card-link" href="fleet/mercedes-benz-sprinter-2026.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.c5.badge"></span>

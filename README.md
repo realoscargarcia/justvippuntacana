@@ -61,6 +61,18 @@ var CONFIG = {
 Also replace the placeholder email (`info@justvippuntacana.com`) and the
 canonical URL in `index.html`.
 
+## Trip search
+
+The hero carries a search widget (pickup, drop-off, date, time, passengers).
+"See options" stores the trip in `sessionStorage`, scrolls to the fleet, swaps
+the section heading for a results heading, shows a summary bar and hides any
+vehicle whose `data-seats` is below the party size. Seat counts come from the
+`seats` field in the vehicle table. Opening a vehicle from the results carries
+the trip into that page's quote form and into the WhatsApp message.
+
+There is no availability backend — the search filters the published fleet and
+hands a complete request to WhatsApp.
+
 ## Fleet and rates
 
 The five vehicles and their rates live in one table at the top of

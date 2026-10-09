@@ -52,6 +52,7 @@
     });
 
     refreshWhatsAppLinks();
+    if (document.getElementById("fleet-title")) fleetHeading(tripActive());
 
     try { localStorage.setItem("jvp-lang", lang); } catch (e) { /* ignore */ }
   }
@@ -146,6 +147,11 @@
         t("form.date") + ": " + date,
         t("form.package") + ": " + (data.get("package") || "")
       ];
+      var trip = window.JVP_TRIP;
+      if (trip && trip.to) lines.push(t("book.dropoff") + ": " + trip.to);
+      if (trip && trip.time) lines.push(t("book.time") + ": " + trip.time);
+      if (trip && trip.pax) lines.push(t("book.pax") + ": " + trip.pax);
+
       var pickup = (data.get("pickup") || "").toString().trim();
       var notes = (data.get("notes") || "").toString().trim();
       if (pickup) lines.push(t("form.pickup") + ": " + pickup);
@@ -190,6 +196,139 @@
     });
   }
 
+  /* ---------------- trip search ---------------- */
+  var TRIP_KEY = "jvp-trip";
+
+  function readTrip() {
+    try {
+      return JSON.parse(sessionStorage.getItem(TRIP_KEY) || "null");
+    } catch (e) { return null; }
+  }
+
+  function saveTrip(trip) {
+    try { sessionStorage.setItem(TRIP_KEY, JSON.stringify(trip)); } catch (e) { /* ignore */ }
+  }
+
+  function formatTrip(trip) {
+    var parts = [];
+    if (trip.date) parts.push(trip.date);
+    if (trip.time) parts.push(trip.time);
+    parts.push(trip.pax + " " + (t("book.paxLabel") || ""));
+    return parts.join(" · ");
+  }
+
+  /* The fleet heading becomes a results heading while a search is active. */
+  function fleetHeading(active) {
+    var title = document.getElementById("fleet-title");
+    var lede = document.getElementById("fleet-lede");
+    if (!title || !lede) return;
+    title.textContent = t(active ? "book.results" : "fleet.title") || title.textContent;
+    lede.textContent = t(active ? "book.resultsLede" : "fleet.lede") || lede.textContent;
+  }
+
+  function tripActive() {
+    var bar = document.getElementById("trip-bar");
+    return !!(bar && !bar.hidden);
+  }
+
+  /* Show only the vehicles that seat the party, and summarise the trip. */
+  function applyTrip(trip) {
+    var bar = document.getElementById("trip-bar");
+    if (!bar) return;
+
+    document.getElementById("trip-from").textContent = trip.from;
+    document.getElementById("trip-to").textContent = trip.to;
+    document.getElementById("trip-meta").textContent = formatTrip(trip);
+    bar.hidden = false;
+
+    var fits = 0;
+    document.querySelectorAll(".fleet-grid .card").forEach(function (card) {
+      var seats = parseInt(card.getAttribute("data-seats"), 10) || 0;
+      var ok = seats >= trip.pax;
+      card.hidden = !ok;
+      if (ok) fits++;
+    });
+
+    var empty = document.getElementById("trip-empty");
+    if (empty) empty.hidden = fits > 0;
+
+    fleetHeading(true);
+  }
+
+  function clearTrip() {
+    var bar = document.getElementById("trip-bar");
+    if (bar) bar.hidden = true;
+    var empty = document.getElementById("trip-empty");
+    if (empty) empty.hidden = true;
+    document.querySelectorAll(".fleet-grid .card").forEach(function (card) { card.hidden = false; });
+    fleetHeading(false);
+    try { sessionStorage.removeItem(TRIP_KEY); } catch (e) { /* ignore */ }
+  }
+
+  function initBooking() {
+    var form = document.getElementById("booking");
+    if (!form) return;
+
+    var dateField = document.getElementById("bk-date");
+    if (dateField && !dateField.value) {
+      dateField.value = new Date().toISOString().slice(0, 10);
+      dateField.min = dateField.value;
+    }
+
+    var error = document.getElementById("bk-error");
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var trip = {
+        from: document.getElementById("bk-from").value.trim(),
+        to: document.getElementById("bk-to").value.trim(),
+        date: document.getElementById("bk-date").value,
+        time: document.getElementById("bk-time").value,
+        pax: parseInt(document.getElementById("bk-pax").value, 10) || 1
+      };
+
+      if (!trip.from || !trip.to || !trip.date) {
+        error.textContent = t("book.error") || "";
+        return;
+      }
+      error.textContent = "";
+
+      saveTrip(trip);
+      applyTrip(trip);
+      document.getElementById("fleet").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    var edit = document.getElementById("trip-edit");
+    if (edit) {
+      edit.addEventListener("click", function () {
+        clearTrip();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        document.getElementById("bk-from").focus({ preventScroll: true });
+      });
+    }
+
+    var stored = readTrip();
+    if (stored) {
+      document.getElementById("bk-from").value = stored.from;
+      document.getElementById("bk-to").value = stored.to;
+      if (stored.date) document.getElementById("bk-date").value = stored.date;
+      if (stored.time) document.getElementById("bk-time").value = stored.time;
+      document.getElementById("bk-pax").value = String(stored.pax);
+      applyTrip(stored);
+    }
+  }
+
+  /* Carry the trip into the quote form on a vehicle page. */
+  function prefillFromTrip() {
+    var trip = readTrip();
+    if (!trip) return;
+    var pickup = document.getElementById("f-pickup");
+    var date = document.getElementById("f-date");
+    if (pickup && !pickup.value) pickup.value = trip.from;
+    if (date && !date.value) date.value = trip.date;
+    window.JVP_TRIP = trip;
+  }
+
   /* ---------------- boot ---------------- */
   document.addEventListener("DOMContentLoaded", function () {
     var yearEl = document.getElementById("year");
@@ -200,6 +339,8 @@
     initReveal();
     initGallery();
     initForm();
+    initBooking();
+    prefillFromTrip();
 
     applyLang(detectLang());
 

@@ -15,6 +15,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 VEHICLES = [
     {
         "slug": "lincoln-navigator-2018",
+        "seats": 6,
         "key": "c1",
         "symbol": "i-suv",
         "cls": "veh.cls.suv",
@@ -25,6 +26,7 @@ VEHICLES = [
     },
     {
         "slug": "cadillac-escalade-2023",
+        "seats": 6,
         "key": "c2",
         "symbol": "i-suv",
         "cls": "veh.cls.suv",
@@ -41,6 +43,7 @@ VEHICLES = [
     },
     {
         "slug": "chevrolet-suburban-high-country-2023",
+        "seats": 6,
         "key": "c3",
         "symbol": "i-suv",
         "cls": "veh.cls.suv",
@@ -50,6 +53,7 @@ VEHICLES = [
     },
     {
         "slug": "chevrolet-suburban-2018",
+        "seats": 6,
         "key": "c4",
         "symbol": "i-suv",
         "cls": "veh.cls.suv",
@@ -59,6 +63,7 @@ VEHICLES = [
     },
     {
         "slug": "mercedes-benz-sprinter-2026",
+        "seats": 14,
         "key": "c5",
         "symbol": "i-van",
         "cls": "veh.cls.van",
@@ -157,7 +162,7 @@ def card(v: dict, prefix: str = "", href_prefix: str = "fleet/") -> str:
     round_trip = round_price(v)
     round_cell = (f"<b>${round_trip}</b>" if round_trip
                   else '<b class="ask" data-i18n="veh.onRequest"></b>')
-    return f"""        <article class="card reveal">
+    return f"""        <article class="card reveal" data-seats="{v['seats']}">
           <a class="card-link" href="{href_prefix}{v['slug']}.html">
             <div class="card-media">
               <span class="badge" data-i18n="fleet.{v['key']}.badge"></span>

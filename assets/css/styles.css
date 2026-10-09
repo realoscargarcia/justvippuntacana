@@ -931,3 +931,115 @@ p:last-child { margin-bottom: 0; }
   .card-rates b { font-size: 1.3rem; }
   .card-cta { background: var(--ink); color: var(--white); }
 }
+
+/* ==========================================================================
+   Trip search — the main way into a booking
+   ========================================================================== */
+/* class-based display rules beat the UA [hidden] rule, so be explicit */
+.card[hidden],
+.trip-bar[hidden],
+.trip-empty[hidden] { display: none; }
+.booking {
+  position: relative;
+  z-index: 4;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: -46px;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -34px rgba(0, 0, 0, 0.55);
+  padding: 1.4rem;
+  color: var(--text);
+}
+.booking-fields {
+  display: grid;
+  grid-template-columns: 1.3fr 1.3fr 0.85fr 0.8fr 0.7fr auto;
+  gap: 1rem;
+  align-items: end;
+}
+.bk-field { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+.bk-field > span {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.bk-field input,
+.bk-field select {
+  width: 100%;
+  font: inherit;
+  font-size: 0.98rem;
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0.5rem 0 0.55rem;
+  transition: border-color 0.25s var(--ease);
+}
+.bk-field input::placeholder { color: #a8a49a; }
+.bk-field input:focus,
+.bk-field select:focus { outline: none; border-bottom-color: var(--gold); }
+.bk-submit { white-space: nowrap; padding-inline: 1.6rem; }
+.bk-error { color: #a4442f; font-size: 0.88rem; margin: 0.9rem 0 0; }
+.bk-error:empty { display: none; }
+
+/* summary of the search, above the results */
+.trip-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.6rem;
+  padding: 1rem 1.3rem;
+  margin-bottom: 1.5rem;
+  background: var(--ink);
+  color: var(--white);
+}
+.trip-route { display: flex; align-items: center; gap: 0.6rem; font-size: 1rem; }
+.trip-route svg { width: 18px; height: 18px; color: var(--gold); flex: none; }
+.trip-route .arrow { color: var(--gold); margin: 0 0.2rem; }
+.trip-meta {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.66);
+}
+.trip-edit {
+  margin-left: auto;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.trip-edit:hover { border-color: var(--gold); color: var(--gold); }
+.trip-empty {
+  padding: 1.2rem 1.3rem;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--muted);
+}
+
+@media (max-width: 1024px) {
+  .booking-fields { grid-template-columns: 1fr 1fr; }
+  .bk-submit { grid-column: 1 / -1; width: 100%; }
+}
+
+@media (max-width: 700px) {
+  .booking {
+    margin-bottom: -36px;
+    padding: 1.2rem;
+  }
+  .booking-fields { grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .bk-field:nth-child(1),
+  .bk-field:nth-child(2),
+  .bk-field:nth-child(5) { grid-column: 1 / -1; }
+  .trip-bar { padding: 0.9rem 1rem; }
+  .trip-edit { margin-left: 0; width: 100%; text-align: center; }
+}
