@@ -16,6 +16,9 @@
 
   /* ---------------- language ---------------- */
   function detectLang() {
+    /* Blog articles exist once per language: the page fixes its own. */
+    var lock = document.documentElement.getAttribute("data-lang-lock");
+    if (lock && DICT[lock]) return lock;
     var q = new URLSearchParams(location.search).get("lang");
     if (q && DICT[q]) return q;
     try {
@@ -49,6 +52,12 @@
 
     document.querySelectorAll(".lang-switch button").forEach(function (btn) {
       btn.setAttribute("aria-pressed", String(btn.dataset.lang === lang));
+    });
+
+    /* Links with a Spanish counterpart (the blog) follow the language. */
+    document.querySelectorAll("[data-href-es]").forEach(function (el) {
+      if (!el.hasAttribute("data-href-en")) el.setAttribute("data-href-en", el.getAttribute("href"));
+      el.setAttribute("href", el.getAttribute(lang === "es" ? "data-href-es" : "data-href-en"));
     });
 
     refreshWhatsAppLinks();
@@ -345,7 +354,15 @@
     applyLang(detectLang());
 
     document.querySelectorAll(".lang-switch button").forEach(function (btn) {
-      btn.addEventListener("click", function () { applyLang(btn.dataset.lang); });
+      btn.addEventListener("click", function () {
+        /* On a blog article the other language is a separate page. */
+        if (btn.dataset.href && btn.dataset.lang !== lang) {
+          try { localStorage.setItem("jvp-lang", btn.dataset.lang); } catch (e) { /* ignore */ }
+          location.href = btn.dataset.href;
+          return;
+        }
+        applyLang(btn.dataset.lang);
+      });
     });
   });
 })();

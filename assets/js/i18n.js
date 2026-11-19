@@ -149,6 +149,7 @@ window.JVP_I18N = {
     "footer.contact": "Contact",
     "footer.hours": "Dispatch available 24/7",
     "footer.rights": "All rights reserved.",
+    "footer.blog": "Blog",
 
     "wa.greeting": "Hello Just VIP Punta Cana, I would like a quote for a chauffeur service.",
 
@@ -345,6 +346,7 @@ window.JVP_I18N = {
     "footer.contact": "Contacto",
     "footer.hours": "Central disponible 24/7",
     "footer.rights": "Todos los derechos reservados.",
+    "footer.blog": "Blog",
 
     "wa.greeting": "Hola Just VIP Punta Cana, quisiera una cotización para un servicio de chofer.",
 
